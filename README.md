@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 # Prepaid Parking System
 
 An IoT-based prepaid parking management system built for academic purposes.
@@ -88,3 +89,7 @@ Available events: `CAR_ENTERED`, `CAR_EXITED`, `OVERSTAY`
 | Variable | Description |
 |----------|-------------|
 | `MONGODB_URI` | MongoDB connection string (required) |
+=======
+# Prepaid-Parking-System
+A prototype IoT-based prepaid parking system using Arduino and ESP8266 with automated barrier control.
+>>>>>>> d982b2f1689bdf4607c1c6ba2cbbceb0ad760344
