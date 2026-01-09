@@ -1,4 +1,3 @@
-
 import { NextResponse } from "next/server"
 import { findActiveSession, updateSlot, setPendingCommand } from "@/lib/parking-store"
 import { pushCommand } from "@/lib/command-emitter"
@@ -14,7 +13,6 @@ export async function POST(request) {
     const existingSession = await findActiveSession(slotId)
 
     if (existingSession) {
-     
       if (existingSession.status === "OVERSTAY") {
         const updated = await updateSlot(slotId, {
           paidMinutes: existingSession.paidMinutes + minutes,

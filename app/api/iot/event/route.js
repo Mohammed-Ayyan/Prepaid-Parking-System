@@ -1,5 +1,3 @@
-
-
 import { NextResponse } from "next/server"
 import { findActiveSession, updateSlot, calculateTimeInfo } from "@/lib/parking-store"
 
