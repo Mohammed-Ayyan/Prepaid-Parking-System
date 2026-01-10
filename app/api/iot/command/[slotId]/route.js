@@ -1,3 +1,7 @@
+/**
+ * GET /api/iot/command?slotId=SLOT-1
+ * Called by the ESP to check for pending hardware commands
+ */
 import { NextResponse } from "next/server"
 import { getSlotWithFreshTime, clearPendingCommand } from "@/lib/parking-store"
 
@@ -21,6 +25,7 @@ export async function GET(request, { params }) {
 
   const command = slot.pendingCommand
 
+  // If there was a command, clear it immediately so it's only executed once
   if (command) {
     await clearPendingCommand(slotId)
     console.log(
