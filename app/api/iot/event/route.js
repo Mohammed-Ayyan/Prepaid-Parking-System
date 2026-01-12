@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server"
-import { findActiveSession, updateSlot, calculateTimeInfo } from "@/lib/parking-store"
+import { findActiveSession, updateSlot, calculateTimeInfo ,setPendingCommand} from "@/lib/parking-store"
 
 export async function POST(request) {
   try {
@@ -18,7 +18,7 @@ export async function POST(request) {
         if (!session) {
           return NextResponse.json({ success: false, error: "No paid session found for this slot" }, { status: 400 })
         }
-
+        await setPendingCommand(slotId, "OPEN_BARRIER")
         const activatedSession = await updateSlot(slotId, {
           status: "ACTIVE",
           startTime: new Date().toISOString(),
@@ -31,7 +31,7 @@ export async function POST(request) {
         if (!session) {
           return NextResponse.json({ success: true, message: "No active session, slot already available" })
         }
-
+        await setPendingCommand(slotId, "LOCK_BARRIER")
         const completedSession = await updateSlot(slotId, {
           status: "AVAILABLE",
           endTime: new Date().toISOString(),
@@ -47,7 +47,7 @@ export async function POST(request) {
         if (!session) {
           return NextResponse.json({ success: false, error: "No active session found for this slot" }, { status: 400 })
         }
-
+        await setPendingCommand(slotId, "LOCK_BARRIER")
         const timeInfo = calculateTimeInfo(session)
         const overstaySession = await updateSlot(slotId, {
           status: "OVERSTAY",
