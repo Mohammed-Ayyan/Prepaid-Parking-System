@@ -15,7 +15,7 @@ export async function POST(request) {
 
     switch (command) {
       case "FORCE_OPEN_BARRIER":
-        await setPendingCommand(slotId, "FORCE_OPEN_BARRIER")
+        await setPendingCommand(slotId, "OPEN_BARRIER")
         pushCommand(slotId, "FORCE_OPEN_BARRIER")
         return NextResponse.json({
           success: true,
@@ -39,6 +39,7 @@ export async function POST(request) {
 
       case "RESET_SLOT":
         const slotExists = await findSlotBySlotId(slotId)
+        pushCommand(slotId, "LOCK_BARRIER")
         if (!slotExists) {
           return NextResponse.json({ success: false, error: `Slot ${slotId} not found` }, { status: 404 })
         }
