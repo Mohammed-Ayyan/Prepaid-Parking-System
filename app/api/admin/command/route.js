@@ -15,7 +15,7 @@ export async function POST(request) {
 
     switch (command) {
       case "FORCE_OPEN_BARRIER":
-        await setPendingCommand(slotId, "OPEN_BARRIER")
+        await setPendingCommand(slotId, "UNLOCK")
         pushCommand(slotId, "FORCE_OPEN_BARRIER")
         return NextResponse.json({
           success: true,
