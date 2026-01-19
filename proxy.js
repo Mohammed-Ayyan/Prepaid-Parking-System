@@ -3,47 +3,79 @@ import { NextResponse } from 'next/server'
 export function proxy(request) {
   const url = request.nextUrl.pathname
 
-  // Only protect API routes
+  // Bot protection for API routes
   if (url.startsWith('/api/')) {
-    // Allow these public endpoints (if you want login/auth to work)
+    // Allow public endpoints
     const publicEndpoints = ['/api/auth']
     if (publicEndpoints.some(endpoint => url.startsWith(endpoint))) {
       return NextResponse.next()
     }
 
-    // Get request info
-    const origin = request.headers.get('origin')
-    const host = request.headers.get('host')
-    const referer = request.headers.get('referer')
+    // === METHOD 1: IP-based bot blocking ===
+    const clientIP = 
+      request.headers.get('x-forwarded-for')?.split(',')[0] || 
+      request.headers.get('x-real-ip') ||
+      request.ip ||
+      'unknown'
+
+    // Block known malicious IPs
+    const blockedIPs = [
+      '10.223.143.13',  // Suspicious bot traffic
+      // Add more suspicious IPs here
+    ]
+
+    if (blockedIPs.includes(clientIP)) {
+      console.log(`[SECURITY] Bot traffic blocked from IP ${clientIP} at ${url}`)
+      return new Promise(() => {})
+    }
+
+    // === METHOD 2: Bot fingerprinting ===
     const userAgent = request.headers.get('user-agent') || ''
+    const accept = request.headers.get('accept') || ''
+    const acceptLanguage = request.headers.get('accept-language')
+    const secFetchSite = request.headers.get('sec-fetch-site')
+    const secFetchMode = request.headers.get('sec-fetch-mode')
+    
+    // Whitelist legitimate API clients
+    const isLegitimateClient = (
+      userAgent.includes('Postman') ||
+      userAgent.includes('curl') ||
+      userAgent.includes('Insomnia') ||
+      userAgent.includes('HTTPie') ||
+      userAgent.includes('python-requests')
+    )
+    
+    // Verify browser legitimacy
+    const isLegitBrowser = (
+      acceptLanguage !== null ||
+      secFetchSite !== null ||
+      secFetchMode !== null ||
+      accept.includes('text/html') ||
+      userAgent.includes('Mozilla') ||
+      userAgent.includes('Chrome') ||
+      userAgent.includes('Safari') ||
+      userAgent.includes('Firefox') ||
+      userAgent.includes('Edge')
+    )
 
-    // Block common API testing tools
-    const blockedAgents = ['postman', 'insomnia', 'curl', 'wget', 'python-requests', 'axios']
-    const isBlockedTool = blockedAgents.some(agent => userAgent.toLowerCase().includes(agent))
+    // Detect bot-like patterns (missing browser headers, suspicious UA)
+    const isSuspiciousBot = (
+      !isLegitBrowser &&
+      !isLegitimateClient &&
+      (userAgent === '' || 
+       userAgent.length < 10 ||
+       (accept === '' || accept === '*/*'))
+    )
 
-    if (isBlockedTool) {
-      console.log(`[BLOCKED] API tool detected: ${userAgent}`)
-      // Return empty response that hangs - no status, no body
-      return new Promise(() => {}) // Never resolves = timeout
+    if (isSuspiciousBot) {
+      console.log(`[SECURITY] Suspicious bot detected and blocked at ${url}`)
+      console.log(`  IP: ${clientIP}`)
+      console.log(`  User-Agent: "${userAgent}"`)
+      console.log(`  Accept: "${accept}"`)
+      return new Promise(() => {})
     }
 
-    // Check if request is from same origin
-    // For server-side Next.js requests, there's no origin but referer should be present
-    const hasValidReferer = referer && referer.includes(host)
-    const hasValidOrigin = origin && origin.includes(host)
-
-    // Allow ONLY if:
-    // - Has valid referer from same domain, OR
-    // - Has valid origin from same domain
-    // - No origin AND no referer = BLOCK (this blocks Postman/curl/ESP)
-    if (!hasValidReferer && !hasValidOrigin) {
-      console.log(`[BLOCKED] External request to ${url}`)
-      console.log(`  Origin: ${origin}`)
-      console.log(`  Referer: ${referer}`)
-      console.log(`  User-Agent: ${userAgent}`)
-      // Return empty response that hangs - no status, no body
-      return new Promise(() => {}) // Never resolves = timeout
-    }
+    // Allow legitimate traffic (browsers and known API tools)
   }
 
   return NextResponse.next()
