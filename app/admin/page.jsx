@@ -384,20 +384,7 @@ export default function AdminPage() {
 
                       {/* Admin Commands */}
                       <div className="flex flex-wrap gap-2">
-                        <button
-                          onClick={() => sendCommand(slot.slotId, "FORCE_OPEN_BARRIER")}
-                          className="inline-flex items-center gap-1.5 px-3 py-2 rounded-lg bg-primary text-primary-foreground text-sm font-medium hover:bg-primary/90 transition-colors"
-                        >
-                          <DoorOpen className="w-4 h-4" />
-                          Open Barrier
-                        </button>
-                        <button
-                          onClick={() => sendCommand(slot.slotId, "OVERSTAY")}
-                          className="inline-flex items-center gap-1.5 px-3 py-2 rounded-lg bg-chart-3 text-chart-3-foreground text-sm font-medium hover:bg-chart-3/90 transition-colors"
-                        >
-                          <Unlock className="w-4 h-4" />
-                          Lock
-                        </button>
+                        
                         <button
                           onClick={() => sendCommand(slot.slotId, "RESET_SLOT")}
                           className="inline-flex items-center gap-1.5 px-3 py-2 rounded-lg bg-destructive text-destructive-foreground text-sm font-medium hover:bg-destructive/90 transition-colors"
