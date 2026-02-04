@@ -392,7 +392,7 @@ export default function AdminPage() {
                           Open Barrier
                         </button>
                         <button
-                          onClick={() => sendCommand(slot.slotId, "RESET_SLOT")}
+                          onClick={() => sendCommand(slot.slotId, "OVERSTAY")}
                           className="inline-flex items-center gap-1.5 px-3 py-2 rounded-lg bg-chart-3 text-chart-3-foreground text-sm font-medium hover:bg-chart-3/90 transition-colors"
                         >
                           <Unlock className="w-4 h-4" />
