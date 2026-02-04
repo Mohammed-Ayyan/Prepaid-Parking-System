@@ -384,6 +384,13 @@ export default function AdminPage() {
 
                       {/* Admin Commands */}
                       <div className="flex flex-wrap gap-2">
+                        <button
+                          onClick={() => sendCommand(slot.slotId, "FORCE_OPEN_BARRIER")}
+                          className="inline-flex items-center gap-1.5 px-3 py-2 rounded-lg bg-primary text-primary-foreground text-sm font-medium hover:bg-primary/90 transition-colors"
+                        >
+                          <DoorOpen className="w-4 h-4" />
+                          Open Barrier
+                        </button>
                         
                         <button
                           onClick={() => sendCommand(slot.slotId, "RESET_SLOT")}
